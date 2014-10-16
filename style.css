@@ -1,0 +1,25 @@
+#main-timeline {
+    background-color: white;
+}
+
+.jenkins-timeline {
+    display: block;
+    position: relative;
+}
+.jenkins-timeline-canvas {
+    background-color: inherit;
+}
+
+.jenkins-timeline .vis.timeline .build-success {
+    background-color: #D6F6D5;
+    border-color: #67C870;
+}
+.jenkins-timeline .vis.timeline .build-successful-last {
+    z-index: 2;
+    background-color: #7DD87A;
+    border-color: #2A9935;
+}
+.jenkins-timeline .vis.timeline .build-failure {
+    background-color: #F5CDCD;
+    border-color: #C86767;
+}
