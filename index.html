@@ -1,18 +1,217 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset=utf-8 />
-    <title>Jenkins Runs</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
-    <link href="lib/vis/vis.css" rel="stylesheet" type="text/css" />
-    <script src="lib/vis/vis.js"></script>
-    <script src="lib/underscore-min.js"></script>
-    <script src="lib/emitter.js"></script>
-    <script src="lib/jsonp.js"></script>
-    <script src="lib/jobs-timeline.js"></script>
-</head>
-<body>
-    <div class="jenkins-timeline" id="main-timeline"></div>
-    <script src="main.js"></script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jenkins Timelines</title>
+
+    <link href="bower_components/fontawesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+
+    <script src="scripts/lib/require.js"></script>
+    <script>
+      requirejs.config({
+        urlArgs: 0 ? "bust=" + (new Date()).getTime() : "",
+        baseUrl: "scripts/lib",
+        paths: {
+          app: "../app",
+        },
+        shim: {
+          "bootstrap": { deps: ["jquery"] },
+          "underscore": { exports: "_" },
+          "jquery.smooth-scroll": { deps: ["jquery"] },
+          "jsonproxy": { deps: ["jquery"] }
+        }
+      });
+
+      var jenkinsTimeline;
+
+      require(["jquery", "app/main", "bootstrap", "jquery.smooth-scroll"], function($, Main) {
+        $(function() {
+          // Account for checkbox and radio items in menus
+          $("a.item-check").on("click", function(e) {
+            e.stopPropagation();
+            if (e.target.nodeName.toLowerCase() != "input") {
+              $(this).find("input").click();
+              e.preventDefault();
+            }
+          });
+
+          // Fix the navbar to the top
+          $("nav").affix({
+            offset: {
+              top: function() { return $("#timeline")[0].offsetTop; }
+            }
+          });
+
+          // Init application
+          jenkinsTimeline = new Main();
+        });
+      });
+    </script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="intro">
+      <!-- <div class="container-wrapper"> --><div class="container">
+
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Jenkins Timeline</h1>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8">
+            <p class="lead">
+              If you wish to keep track of when
+              <a href="https://jenkins-ci.org">Jenkins</a> jobs have last
+              run—for orchestration or to track freshness—Jenkins Timeline
+              will show you which jobs are falling behind.
+
+              <a href="https://github.com/icio/jenkins-timeline"><i class="fa fa-github"></i> Source</a>
+            </p>
+          </div>
+          <div class="col-md-4">
+            <p>
+              <strong>Examples:</strong>
+              <a class="link-example" href="?url=http://jenkins.nodejs.org/&amp;proxy=yes">NodeJS</a>,
+              <a class="link-example" href="?url=https://builds.apache.org/&amp;proxy=yes">Apache Build Server</a>,
+              <a class="link-example" href="?url=https://hudson.jboss.org/hudson/view/All/&amp;proxy=yes">JBoss QA</a>,
+              <a class="link-example" href="?url=http://ci.projectblacklight.org/jenkins/&amp;proxy=yes">Project Backlight QA</a>,
+              <a class="link-example" href="?url=https://jenkins.scala-ide.org:8496/jenkins/&amp;proxy=yes">Scala IDE</a>,
+              <a class="link-example" href="?url=https://jenkins.openstack.org/view/Openstack-manuals/&amp;proxy=yes&amp;hidden=notbuilt">Openstack</a>,
+              <a class="link-example" href="?url=https://apps.dhis2.org/ci/&amp;proxy=yes">DHIS 2</a>,
+              <a class="link-example" href="?url=https://ci.inria.fr/hwloc/&amp;proxy=yes">hwloc CI</a>,
+              <a class="link-example" href="?url=http://timboudreau.com/builds/&amp;proxy=yes">Tim Boudeau's Build Server</a>.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+
+            <div id="url-input-error" class="alert alert-danger alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <strong>Snap!</strong> <span class="message"></span>
+            </div>
+
+            <form id="url-input" class="form-horizontal well">
+              <div class="form-group form-group-lg">
+                <label class="col-sm-2 control-label">Jenkins URL</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control input-lg" />
+                  <p class="help-block">The Jenkins homepage or view URL.</p>
+                </div>
+                <div class="col-sm-2">
+                  <button class="btn btn-lg btn-primary">
+                    <i class="fa fa-flash"></i>
+                    Plot
+                  </button>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label>
+                      <input id="url-proxy" type="checkbox" checked="checked" />
+                      Use <a href="https://jsonp.nodejitsu.com/">JSONProxy</a>
+                    </label>
+                    <p class="help-block">This proxy can introduce high latency, but is necessary for CORS where JSONP is not available from the server.</p>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+      </div><!-- </div> -->
+    </div>
+
+
+    <div id="timeline">
+
+      <!-- Navigation bar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#timeline">Jenkins Timeline</a>
+
+            <!-- View selector -->
+            <ul id="view-selector" class="nav navbar-nav navbar-left">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <span class="dropdown-title">Views</span>
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#"><em>None loaded</em></a></li>
+
+                  <!-- URL Prompt -->
+                  <li class="dropdown-persistent divider"></li>
+                  <li class="dropdown-persistent"><a id="url-prompter" href="#">Enter URL…</a></li>
+                </ul>
+              </li>
+              <li id="loader"><a><i class="fa fa-circle-o-notch fa-spin"></i></a></li>
+            </ul>
+          </div>
+
+          <!-- View options -->
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span></a>
+              <ul class="dropdown-menu dropdown-menu-form">
+                <li><a class="item-check" href="#">
+                  <input type="checkbox" class="color-toggle" data-color="disabled" />
+                  Show disabled jobs
+                </a></li>
+                <li><a class="item-check" href="#">
+                  <input type="checkbox" class="color-toggle" data-color="notbuilt" />
+                  Show unbuilt jobs
+                </a></li>
+
+                <li class="divider"></li>
+
+                <li><a class="item-check" href="#"><label>
+                  <input type="radio" class="timeline-view-control" value="comfy" />
+                  Comfy view
+                </label></a></li>
+                <li><a class="item-check" href="#"><label>
+                  <input type="radio" class="timeline-view-control" value="tight" />
+                  Tight view
+                </label></a></li>
+                <li><a class="item-check" href="#"><label>
+                  <input type="radio" class="timeline-view-control" value="mini" />
+                  Minimap
+                </label></a></li>
+              </ul>
+            </li>
+          </ul>
+
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+
+            <!-- Timeline -->
+            <div class="timeline"></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </body>
 </html>
