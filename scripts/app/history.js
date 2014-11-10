@@ -1,4 +1,8 @@
 define(["underscore", "uri/URI"], function(_, URI) {
+
+  var PROXY_ENABLED = "yes";
+  var PROXY_DISABLED = "no";
+
   function History(jenkins, proxy, jobsView, timeline)
   {
     this.jenkins = jenkins;
@@ -20,7 +24,7 @@ define(["underscore", "uri/URI"], function(_, URI) {
     this.jenkins.on("url.changed", function(url) {
       this.updateHistory({
         url: url,
-        proxy: this.proxy.useProxy ? "yes" : ""
+        proxy: this.proxy.useProxy ? PROXY_ENABLED : PROXY_DISABLED
       });
     }.bind(this));
 
@@ -72,8 +76,8 @@ define(["underscore", "uri/URI"], function(_, URI) {
   History.prototype.updateComponents = function(state) {
     state = this.parseState(state);
     this.updateState(state);
-    if ("proxy" in state) {
-      this.proxy.setUseProxy(!!state.proxy);
+    if (state.proxy) {
+      this.proxy.setUseProxy(state.proxy == PROXY_ENABLED);
     }
     if (state.url) {
       this.jenkins.setURL(state.url);
@@ -133,7 +137,7 @@ define(["underscore", "uri/URI"], function(_, URI) {
     var colors = this.getColorState();
     return {
       url: this.jenkins.url,
-      proxy: this.proxy.useProxy ? "yes" : "",
+      proxy: this.proxy.useProxy ? PROXY_ENABLED : PROXY_DISABLED,
       view: this.timeline.view,
       shown: colors.shown,
       hidden: colors.hidden,
