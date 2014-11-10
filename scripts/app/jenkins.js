@@ -155,9 +155,10 @@ define(
           function() {
             this.view = this.getViewByURL(url);
             if (!this.view) {
-              console.error("View not found", url, url);
               this.trigger("error", {
-                message: "Unable to find view " + url
+                message: "Unable to find view",
+                url: url,
+                views: this.views,
               });
               deferred.reject();
               return;
