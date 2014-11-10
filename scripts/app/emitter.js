@@ -29,7 +29,7 @@
 
     trigger: function(eventName) {
       if (this._emitterTriggerDebug) {
-        console.log(this, eventName, Array.prototype.slice.call(arguments, 1));
+        console.log(eventName, this, Array.prototype.slice.call(arguments, 1));
       }
       this.events = this.events || {};
       if (this.events[eventName] instanceof Array) {
