@@ -25,10 +25,10 @@ define(
         self.jenkins.setURL(url);
       });
 
-      this.jenkins.on("view.changed", function(view) {
+      this.jenkins.on("url.changing", function(url) {
         this.feedback.hide();
         this.proxyControl.checked = this.proxy.useProxy;
-        this.input.val(URI(view.url).toString());
+        this.input.val(URI(url).toString());
       }.bind(this));
 
       this.jenkins.on("error", function(error) {
