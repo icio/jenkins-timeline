@@ -117,6 +117,9 @@
 .timeline-job:hover .timeline-job-head {
   margin-left: -3px;
 }
+.timeline-job:hover a {
+  padding-left: 3px;
+}
 
 .timeline-mini .timeline-job-head {
   display: none;
