@@ -33,12 +33,16 @@ define(
         return this._viewsLoader;
       }
 
+      this.trigger("server.changing", server);
       if (setState !== false) {
-        this.setStateURL(server);
+        this.trigger("url.changing", server);
       }
 
       return this.reloadViews(server)
         .done(function() {
+          if (setState !== false) {
+            this.setStateURL(server);
+          }
           this.server = server;
           this.serverAPIURL = this.getRootAPIURL(server);
           this.trigger("server.changed", server);
@@ -120,6 +124,7 @@ define(
     Jenkins.prototype.setView = function(view) {
       if (!view) {
         if (this.view) {
+          this.trigger("view.changing", null);
           this.view = null;
           this.trigger("view.changed", null);
           return this.reloadJobs();
@@ -135,19 +140,22 @@ define(
       } else {
         url = URI(view.url);
       }
+      url = this.getIndexURL(url);
 
       // if (this.view && url == this.view.url) {
       //   return this._jobsLoader;
       // }
 
       var deferred = new $.Deferred();
+      this.trigger("url.changing", url);
+      this.trigger("view.changing", url);
 
-      this.setServer(url)
+      this.setServer(url, false)
         .done(
           function() {
             this.view = this.getViewByURL(url);
             if (!this.view) {
-              console.error("View not found", url, this.getIndexURL(url));
+              console.error("View not found", url, url);
               this.trigger("error", {
                 message: "Unable to find view " + url
               });
