@@ -35,7 +35,7 @@ define(
       history.init(window.location.href);
 
       $(".navbar-brand").smoothScroll();
-      $(".link-example").on("click", function(e) {
+      $(document.body).on("click", "a.link-internal", function(e) {
         history.go(this.href);
         e.preventDefault();
       });
