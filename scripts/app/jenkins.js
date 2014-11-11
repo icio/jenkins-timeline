@@ -233,7 +233,7 @@ define(
           }.bind(this)
         ).fail(
           function() {
-            this.trigger("error", "Couldn't load teh jobs");
+            this.trigger("error", {message: "An error occured loading the jobs from " + url.toString()});
           }.bind(this)
         ).always(
           function() {
