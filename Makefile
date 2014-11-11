@@ -1,5 +1,9 @@
 .PHONY: bower_components scripts/lib
 
+styles: bower_components
+	cp bower_components/fontawesome/css/font-awesome.min.css styles/font-awesome.min.css
+	cp bower_components/bootstrap/dist/css/bootstrap.min.css styles/bootstrap.min.css
+
 scripts/lib: bower_components
 	# Collect together the scripts from their vendor dirs
 	cp bower_components/bootstrap/dist/js/bootstrap.min.js scripts/lib/bootstrap.js
