@@ -1,11 +1,2 @@
 - Views are case-sensitive but we're currently smashing everything into
   lowercase so that users can type in case insensitively
-- Redirects for the API are not recognised by the http client so we're still
-  looking up the wrong URI of our job views. To solve this we can either remove
-  the requirement for all views to be indexed by an initial server lookup, or
-  handle the error case better. The UI would still be a little bit broken
-  because the View selector would show an empty view, and the currently
-  selected view would not be in its list.
-- Jenkins servers often run on https:// for web-browsers but force http:// for
-  api clients. This often results in us not finding views because we're not
-  looking up the correct protocol of the URI.
