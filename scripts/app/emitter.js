@@ -1,5 +1,7 @@
-(function() {
+define(["underscore"], function(_) {
+
   function Emitter() {};
+
   Emitter.prototype = {
     on: function(eventName) {
       var handler = (typeof arguments[1] === 'function') ? arguments[1] : arguments[2];
@@ -45,12 +47,5 @@
     }
   };
 
-  if (typeof define === 'function' && define.amd) {
-    define(function() {
-      return Emitter;
-    });
-  } else {
-    // Put this into the global namespace
-    this.Emitter = Emitter;
-  };
-}).call(this);
+  return Emitter;
+});
