@@ -1,2 +1,4 @@
 - Views are case-sensitive but we're currently smashing everything into
   lowercase so that users can type in case insensitively
+- Collapse rows in mobile view to have alternating job title/build statuses
+- Collapse navigation bar view in mobile
