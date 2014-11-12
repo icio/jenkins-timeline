@@ -3,11 +3,15 @@ define(["underscore"], function(_) {
   function Emitter() {};
 
   Emitter.prototype = {
-    on: function(eventName) {
+    on: function(eventNames) {
       var handler = (typeof arguments[1] === 'function') ? arguments[1] : arguments[2];
       this.events = this.events || {};
-      this.events[eventName] = this.events[eventName] || [];
-      this.events[eventName].push(handler);
+
+      _.each(eventNames.split(" "), function(eventName) {
+        if (!eventName) return;
+        this.events[eventName] = this.events[eventName] || [];
+        this.events[eventName].push(handler);
+      }, this);
     },
     off: function(eventName) {
       var handler = (typeof arguments[1] === 'function') ? arguments[1] : arguments[2];
