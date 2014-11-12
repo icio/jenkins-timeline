@@ -13,7 +13,7 @@
     <script src="scripts/lib/require.js"></script>
     <script>
       requirejs.config({
-        urlArgs: 0 ? "bust=" + (new Date()).getTime() : "",
+        urlArgs: 1 ? "bust=" + (new Date()).getTime() : "",
         baseUrl: "scripts/lib",
         paths: {
           app: "../app",
@@ -22,7 +22,8 @@
           "bootstrap": { deps: ["jquery"] },
           "underscore": { exports: "_" },
           "jquery.smooth-scroll": { deps: ["jquery"] },
-          "jsonproxy": { deps: ["jquery"] }
+          "jsonproxy": { deps: ["jquery"] },
+          "countdown": { exports: "Countdown" }
         }
       });
 
@@ -168,6 +169,19 @@
 
           <!-- View options -->
           <ul class="nav navbar-nav navbar-right">
+            <li>
+              <div class="refresher btn-group navbar-btn">
+                <button class="btn btn-default refresher-toggle"><i class="refresher-state fa fa-fw fa-refresh"></i> <span class="refresher-countdown">5s</span></button>
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                <ul class="refresher-interval-select dropdown-menu">
+                  <li><a href="#" class="refresher-interval" data-interval="5">5 seconds</a></li>
+                  <li><a href="#" class="refresher-interval" data-interval="10">10 seconds</a></li>
+                  <li><a href="#" class="refresher-interval" data-interval="30">30 seconds</a></li>
+                  <li><a href="#" class="refresher-interval" data-interval="60">1 minute</a></li>
+                  <li><a href="#" class="refresher-interval" data-interval="300">5 minutes</a></li>
+                </ul>
+              </div>
+            </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span></a>
               <ul class="dropdown-menu dropdown-menu-form">

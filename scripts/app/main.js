@@ -1,6 +1,6 @@
 define(
-  ["./jenkins", "./jobsView", "./loader", "./urlPrompt", "./viewSelector", "./timeline", "./colorControl", "./timelineViewControl", "./history", "./proxy", "./proxyControl"],
-  function(Jenkins, JobsView, Loader, URLPrompt, ViewSelector, Timeline, ColorControl, TimelineViewControl, History, Proxy, ProxyControl) {
+  ["./jenkins", "./jobsView", "./loader", "./urlPrompt", "./viewSelector", "./timeline", "./colorControl", "./timelineViewControl", "./history", "./proxy", "./proxyControl", "./refresher", "./refresherControl"],
+  function(Jenkins, JobsView, Loader, URLPrompt, ViewSelector, Timeline, ColorControl, TimelineViewControl, History, Proxy, ProxyControl, Refresher, RefresherControl) {
     function Main() {
 
       var jenkins = window.jenkins = new Jenkins();
@@ -23,7 +23,12 @@ define(
 
       var timeline = new Timeline(jenkins, jobs, ".timeline");
       var timelineViewControl = new TimelineViewControl(timeline, ".timeline-view-control");
-      var history = new History(jenkins, proxy, jobs, timeline);
+
+      var refresher = new Refresher(jenkins);
+      var refresherControl = new RefresherControl(refresher, ".refresher");
+      refresher.debugTriggers();
+
+      var history = new History(jenkins, proxy, jobs, timeline, refresher);
 
       jobs.init();
       loader.init();
@@ -32,6 +37,8 @@ define(
       timeline.init();
       colorControl.init();
       timelineViewControl.init();
+      refresher.init();
+      refresherControl.init();
       history.init(window.location.href);
 
       $(".navbar-brand").smoothScroll();

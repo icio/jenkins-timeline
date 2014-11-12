@@ -1,14 +1,15 @@
 define(["underscore", "uri/URI"], function(_, URI) {
 
-  var PROXY_ENABLED = "yes";
-  var PROXY_DISABLED = "no";
+  var REFRESHER_ENABLED = PROXY_ENABLED = "yes";
+  var REFRESHER_DISABLED = PROXY_DISABLED = "no";
 
-  function History(jenkins, proxy, jobsView, timeline)
+  function History(jenkins, proxy, jobsView, timeline, refresher)
   {
     this.jenkins = jenkins;
     this.proxy = proxy;
     this.jobsView = jobsView;
     this.timeline = timeline;
+    this.refresher = refresher;
 
     this.history = window.history;
   }
@@ -34,6 +35,13 @@ define(["underscore", "uri/URI"], function(_, URI) {
 
     this.timeline.on("view.changed", function(view) {
       this.updateHistory({view: view});
+    }.bind(this));
+
+    this.refresher.on("playing interval.changed", function() {
+      this.updateHistory({
+        "refresh": this.refresher.playing ? REFRESHER_ENABLED : REFRESHER_DISABLED,
+        "refresh-interval": this.refresher.interval
+      });
     }.bind(this));
 
     // History changes update the component
@@ -84,6 +92,14 @@ define(["underscore", "uri/URI"], function(_, URI) {
     }
     if (state.view) {
       this.timeline.setView(state.view);
+    }
+    if (state["refresh-interval"]) {
+      this.refresher.setInterval(state["refresh-interval"]);
+    }
+    if (state.refresh == REFRESHER_ENABLED) {
+      this.refresher.play();
+    } else {
+      this.refresher.stop();
     }
 
     var colorsUpdated = false;
@@ -141,6 +157,8 @@ define(["underscore", "uri/URI"], function(_, URI) {
       view: this.timeline.view,
       shown: colors.shown,
       hidden: colors.hidden,
+      "refresh": this.refresher.playing ? REFRESHER_ENABLED : REFRESHER_DISABLED,
+      "refresh-interval": this.refresher.interval
     };
   };
 

@@ -19,7 +19,7 @@ define(
 
     Timeline.prototype.init = function() {
       this.jobsView.on("jobs.changed", this.update.bind(this));
-      this.jenkins.on("jobs.loading", this.empty.bind(this));
+      this.jenkins.on("view.changed", this.empty.bind(this));
       this.setView("comfy");
     };
 
