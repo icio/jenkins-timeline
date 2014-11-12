@@ -14,6 +14,7 @@ scripts: bower
 	# Collect together the scripts from their vendor dirs
 	rm -rf scripts/lib/*
 	cp bower_components/bootstrap/dist/js/bootstrap.min.js scripts/lib/bootstrap.js
+	cp bower_components/countdown.js/lib/countdown.js scripts/lib/countdown.js
 	cp bower_components/jquery/dist/jquery.min.js scripts/lib/jquery.js
 	cp bower_components/jquery/dist/jquery.min.map scripts/lib/jquery.min.map
 	cp bower_components/jquery-smooth-scroll/jquery.smooth-scroll.min.js scripts/lib/jquery.smooth-scroll.js
