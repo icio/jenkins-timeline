@@ -12,7 +12,7 @@ MIT license
   var regex = /^(?:(?:(?:((?:file|https?):))?\/\/)?((?:[\w\-]\.?)+(?::\d+)?)?(\/\S*)?)$/i;
 
   function proxyUrl(url, raw){
-    url = 'https://jsonp.nodejitsu.com/?url=' + encodeURIComponent(url);
+    url = 'https://jsonp.afeld.me/?url=' + encodeURIComponent(url);
     if (raw){
       url += '&raw=true';
     }
